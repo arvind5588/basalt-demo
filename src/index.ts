@@ -10,11 +10,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+const RapidAPIKey = "2c0387dc3amsh6a10f83163c9f0cp1ff47ejsn9c370237d1b6";
 const headers = {
-    'X-RapidAPI-Key': '2c0387dc3amsh6a10f83163c9f0cp1ff47ejsn9c370237d1b6',
+    'X-RapidAPI-Key': `${RapidAPIKey}`,
     'X-RapidAPI-Host': 'car-api2.p.rapidapi.com'
 }
 const rapidAPIUrl = 'https://car-api2.p.rapidapi.com/api/';
+const apiByNinjaUrl = 'https://cars-by-api-ninjas.p.rapidapi.com/v1/';
 
 const defaultParams = {sort: 'id', direction: 'asc', year: '2021', verbose: 'yes' };
 
@@ -62,6 +64,28 @@ app.get('/api/v1/bodies', async (req: Request, res: Response) => {
         url: `${rapidAPIUrl}bodies`,
         params,
         headers
+    };
+
+    try {
+        const response = await axios.request(options);
+        res.json({ status: 'success', data: response.data });
+    } catch (error) {
+        res.json({ status: 'failed', msg: error });
+    }
+});
+
+//API Ninjas Cars API endpoint.
+//Get car data from given parameters. Returns a list of car models (and their information) that satisfy the parameters.
+app.get('/api/v1/cars', async (req: Request, res: Response) => {
+    let params = req.body || { model: 'corolla' };
+    const options = {
+        method: 'GET',
+        url:  `${apiByNinjaUrl}cars`,
+        params,
+        headers: {
+            'X-RapidAPI-Key': `${RapidAPIKey}`,
+            'X-RapidAPI-Host': 'cars-by-api-ninjas.p.rapidapi.com'
+        }
     };
 
     try {
