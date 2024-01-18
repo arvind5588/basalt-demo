@@ -10,6 +10,9 @@ This Api used below car-api2 integration
 
 https://rapidapi.com/carapi/api/car-api2
 
+# Postman Collection Link:
+https://arvind-tech.postman.co/workspace/API'S~5ea54418-4798-410b-811d-b10e072e3bbc/collection/911608-82addb04-53ea-406d-8bd2-95452b3127d0?action=share&creator=911608&active-environment=911608-b4290646-5810-45c7-a7cc-c3dad5e30968
+
 # How to SetUp & Install?
 
 ```sh
