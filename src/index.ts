@@ -1,14 +1,21 @@
 import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
+const cors = require("cors");
 const app: Express = express();
 const port = process.env.PORT || 3000;
 const axios = require('axios');
-const bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
+require("dotenv").config();
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
+// Middlewares here 
+app.use(express.json()); 
+app.use(cors()); 
+
 
 const RapidAPIKey = "2c0387dc3amsh6a10f83163c9f0cp1ff47ejsn9c370237d1b6";
 const headers = {
@@ -110,6 +117,31 @@ app.get('/api/v1/cars', async (req: Request, res: Response) => {
         res.json({ status: 'failed', msg: error });
     }
 });
+
+
+app.post("/api/v1/create-checkout-session", async (req, res) => { 
+    const { product } = req.body; 
+    //console.log(product);
+    const session = await stripe.checkout.sessions.create({ 
+        payment_method_types: ["card"], 
+        line_items: [ 
+            { 
+            price_data: { 
+                currency: "inr", 
+                product_data: { 
+                    name: product.name, 
+                }, 
+                unit_amount: product.price * 100, 
+            }, 
+            quantity: product.quantity, 
+            }, 
+        ], 
+        mode: "payment", 
+        success_url: `http://localhost:${port}/success`, 
+        cancel_url: `http://localhost:${port}/cancel`, 
+    }); 
+    res.json({ id: session.id }); 
+}); 
 
 app.listen(port, () => {
     console.log(`Server running at port ${port}`);
